@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import { json } from "body-parser";
 import { port } from "./config";
+import sequelize from "./database";
 
 import videosRoutes from "./routes/videos";
 
@@ -18,6 +19,13 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: err.message });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+sequelize
+  .sync()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running at http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to sync database:", err);
+  });
