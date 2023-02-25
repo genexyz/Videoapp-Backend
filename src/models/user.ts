@@ -45,6 +45,4 @@ export const initUser = (sequelize: Sequelize) => {
       tableName: "users",
     }
   );
-
-  sequelize.sync();
 };

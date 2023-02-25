@@ -3,11 +3,11 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { jwtSecret } from "../config";
 
 export interface CustomRequest extends Request {
-  token: string | JwtPayload;
+  user?: JwtPayload;
 }
 
 export const isAuthenticated = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -20,7 +20,12 @@ export const isAuthenticated = async (
     }
 
     const decoded = jwt.verify(token, jwtSecret);
-    (req as CustomRequest).token = decoded;
+
+    if (typeof decoded === "string") {
+      throw new Error("Token is not valid");
+    }
+
+    req.user = decoded;
 
     next();
   } catch (err) {

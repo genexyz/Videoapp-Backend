@@ -1,12 +1,21 @@
 import { RequestHandler } from "express";
 import Video from "../models/video";
+import User from "../models/user";
+import Likes from "../models/likes";
+import { CustomRequest } from "../middlewares/auth";
 
 const isValidUrl = (url: string) => /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url);
 
-// TODO: Auth validation in all methods
-
-export const getVideos: RequestHandler = async (req, res, next) => {
-  Video.findAll()
+export const getVideos: RequestHandler = async (req, res) => {
+  Video.findAll({
+    include: [
+      {
+        model: User,
+        attributes: ["id", "name"],
+      },
+    ],
+    where: { published: true },
+  })
     .then((videos) => {
       res.status(200).json({ message: "Videos Fetched", videos });
     })
@@ -16,10 +25,17 @@ export const getVideos: RequestHandler = async (req, res, next) => {
     });
 };
 
-export const getVideo: RequestHandler = async (req, res, next) => {
+export const getVideo: RequestHandler = async (req, res) => {
   const videoId = req.params.id;
 
-  Video.findByPk(videoId)
+  Video.findByPk(videoId, {
+    include: [
+      {
+        model: User,
+        attributes: ["id", "name"],
+      },
+    ],
+  })
     .then((video) => {
       if (!video) {
         return res.status(404).json({ message: "Video not found" });
@@ -33,14 +49,18 @@ export const getVideo: RequestHandler = async (req, res, next) => {
     });
 };
 
-export const createVideo: RequestHandler = async (req, res, next) => {
+export const createVideo: RequestHandler = async (req: CustomRequest, res) => {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
   const title = (req.body as { title: string }).title;
   const description = (req.body as { description: string }).description;
   const url = (req.body as { url: string }).url;
   const thumbnail = (req.body as { thumbnail: string }).thumbnail;
   const published = false;
   const publishedAt = null;
-  const likes = 0;
+  const likesAmount = 0;
+  const likes: string[] = [];
 
   const newErrors: {
     title?: string;
@@ -67,6 +87,11 @@ export const createVideo: RequestHandler = async (req, res, next) => {
   }
 
   try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const result = await Video.create({
       title,
       description,
@@ -74,7 +99,9 @@ export const createVideo: RequestHandler = async (req, res, next) => {
       thumbnail,
       published,
       publishedAt,
+      likesAmount,
       likes,
+      userId,
     });
     const newVideo = result.toJSON();
 
@@ -85,14 +112,24 @@ export const createVideo: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const publishVideo: RequestHandler = async (req, res, next) => {
+export const publishVideo: RequestHandler = async (req: CustomRequest, res) => {
   const videoId = req.params.id;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const video = await Video.findByPk(videoId);
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    const video = await Video.findByPk(videoId);
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
+    }
+
+    if (video.userId !== userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     if (video.published) {
@@ -111,32 +148,49 @@ export const publishVideo: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const likeVideo: RequestHandler = async (req, res, next) => {
+export const likeVideo: RequestHandler = async (req: CustomRequest, res) => {
   const videoId = req.params.id;
-
-  // TODO: Check if user has already liked the video
-  // TODO 2: If user has already liked the video, unlike it
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const video = await Video.findByPk(videoId);
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    const video = await Video.findByPk(videoId, {
+      include: [{ model: User, attributes: ["id"] }],
+    });
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
     }
 
-    video.likes++;
+    const like = await Likes.findOne({ where: { userId, videoId } });
 
-    await video.save();
+    if (!like) {
+      await Likes.create({ userId, videoId });
+      video.likesAmount++;
 
-    res.status(200).json({ message: "Video Liked", video });
+      await video.save();
+      res.status(200).json({ message: "Video Liked", video });
+    } else {
+      await Likes.destroy({ where: { userId, videoId } });
+      video.likesAmount--;
+
+      await video.save();
+      res.status(200).json({ message: "Video Unliked", video });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-export const updateVideo: RequestHandler = async (req, res, next) => {
+export const updateVideo: RequestHandler = async (req: CustomRequest, res) => {
   const videoId = req.params.id;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const title = (req.body as { title: string }).title;
   const description = (req.body as { description: string }).description;
@@ -168,10 +222,18 @@ export const updateVideo: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const video = await Video.findByPk(videoId);
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    const video = await Video.findByPk(videoId);
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
+    }
+
+    if (video.userId !== userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     await video.update({
@@ -188,13 +250,24 @@ export const updateVideo: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const deleteVideo: RequestHandler = async (req, res, next) => {
+export const deleteVideo: RequestHandler = async (req: CustomRequest, res) => {
+  const videoId = req.params.id;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
   try {
-    const videoId = req.params.id;
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const video = await Video.findByPk(videoId);
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
+    }
+
+    if (video.userId !== userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     await video.destroy();

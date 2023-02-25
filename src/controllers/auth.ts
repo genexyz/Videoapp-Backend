@@ -9,7 +9,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-export const login: RequestHandler = async (req, res, next) => {
+export const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || typeof email !== "string" || !password || typeof password !== "string") {
@@ -49,7 +49,7 @@ export const login: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const register: RequestHandler = async (req, res, next) => {
+export const register: RequestHandler = async (req, res) => {
   const { email, password, name } = req.body;
 
   if (
@@ -61,6 +61,10 @@ export const register: RequestHandler = async (req, res, next) => {
     typeof name !== "string"
   ) {
     return res.status(400).json({ message: "Name, email, and password are required" });
+  }
+
+  if (name.length > 100) {
+    return res.status(400).json({ message: "Name cannot be more than 100 characters" });
   }
 
   if (!EMAIL_REGEX.test(email)) {

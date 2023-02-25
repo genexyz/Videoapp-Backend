@@ -8,7 +8,8 @@ export default class Video extends Model {
   declare thumbnail: string;
   declare published: boolean;
   declare publishedAt?: Date;
-  declare likes: number;
+  declare userId: string;
+  declare likesAmount: number;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -45,9 +46,18 @@ export const initVideo = (sequelize: Sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      likes: {
+      likesAmount: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0,
+      },
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
       },
     },
     {
@@ -55,6 +65,4 @@ export const initVideo = (sequelize: Sequelize) => {
       tableName: "videos",
     }
   );
-
-  sequelize.sync();
 };
