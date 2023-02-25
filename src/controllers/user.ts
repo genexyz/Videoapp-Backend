@@ -18,7 +18,7 @@ export const getUserInfo: RequestHandler = async (req: CustomRequest, res) => {
     }
 
     const creator = await User.findByPk(creatorId, {
-      attributes: ["id", "name"],
+      attributes: ["id", "name", "bio", "imageUrl", "role"],
     });
     if (!creator) {
       return res.status(404).json({ message: "Creator not found" });
@@ -29,20 +29,20 @@ export const getUserInfo: RequestHandler = async (req: CustomRequest, res) => {
       videos = await Video.findAll({
         where: { userId: creatorId },
         attributes: ["id", "title", "published", "thumbnail", "createdAt", "publishedAt"],
-        include: [{ model: User, attributes: ["id", "name"] }],
+        include: [{ model: User, attributes: ["id", "name", "imageUrl"] }],
       });
     } else {
       videos = await Video.findAll({
         where: { userId: creatorId, published: true },
         attributes: ["id", "title", "published", "thumbnail", "createdAt", "publishedAt"],
-        include: [{ model: User, attributes: ["id", "name"] }],
+        include: [{ model: User, attributes: ["id", "name", "imageUrl"] }],
       });
     }
 
     const followers = await Follow.findAll({
       where: { followingId: creatorId },
       attributes: [],
-      include: [{ model: User, as: "follower", attributes: ["id", "name"] }],
+      include: [{ model: User, as: "follower", attributes: ["id", "name", "imageUrl"] }],
     });
 
     const likes = await Likes.findAll({
@@ -53,7 +53,7 @@ export const getUserInfo: RequestHandler = async (req: CustomRequest, res) => {
     const likedVideos = await Video.findAll({
       where: { id: likes.map((like) => like.videoId) },
       attributes: ["id", "title", "published", "thumbnail", "createdAt", "publishedAt"],
-      include: [{ model: User, attributes: ["id", "name"] }],
+      include: [{ model: User, attributes: ["id", "name", "imageUrl"] }],
     });
 
     res.status(200).json({ creator, videos, followers, likedVideos });

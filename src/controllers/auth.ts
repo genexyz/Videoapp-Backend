@@ -72,7 +72,7 @@ export const login: RequestHandler = async (req, res) => {
 };
 
 export const register: RequestHandler = async (req, res) => {
-  const { email, password, name, bio, imageUrl } = req.body;
+  const { email, password, name, bio, imageUrl, role } = req.body;
 
   // TODO: Add multiple errors form validation
 
@@ -117,6 +117,14 @@ export const register: RequestHandler = async (req, res) => {
     return res.status(400).json({ message: "Invalid image URL" });
   }
 
+  if (role && typeof role !== "string") {
+    return res.status(400).json({ message: "Role must be a string" });
+  }
+
+  if (role && role !== "student" && role !== "teacher") {
+    return res.status(400).json({ message: "Role must be either student or teacher" });
+  }
+
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -130,6 +138,9 @@ export const register: RequestHandler = async (req, res) => {
       email,
       password: hashedPassword,
       name,
+      bio,
+      imageUrl,
+      role,
     });
 
     const token = jwt.sign({ id: newUser.id, email: newUser.email }, jwtSecret, {
