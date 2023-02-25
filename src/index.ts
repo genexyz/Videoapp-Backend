@@ -1,17 +1,18 @@
 import express, { Express, Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-import videos from "./routes/videos";
+import { json } from "body-parser";
+import { port } from "./config";
 
-dotenv.config();
+import videosRoutes from "./routes/videos";
 
 const app: Express = express();
-const port = process.env.PORT;
+
+app.use(json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Test Server is running");
 });
 
-app.use("/videos", videos);
+app.use("/videos", videosRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: err.message });
