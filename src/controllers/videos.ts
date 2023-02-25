@@ -6,47 +6,61 @@ import { CustomRequest } from "../middlewares/auth";
 
 const isValidUrl = (url: string) => /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url);
 
-export const getVideos: RequestHandler = async (req, res) => {
-  Video.findAll({
-    include: [
-      {
-        model: User,
-        attributes: ["id", "name"],
-      },
-    ],
-    where: { published: true },
-  })
-    .then((videos) => {
-      res.status(200).json({ message: "Videos Fetched", videos });
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
+export const getVideos: RequestHandler = async (req: CustomRequest, res) => {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const videos = await Video.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name"],
+        },
+      ],
+      where: { published: true },
     });
+    res.status(200).json({ message: "Videos Fetched", videos });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
-export const getVideo: RequestHandler = async (req, res) => {
+export const getVideo: RequestHandler = async (req: CustomRequest, res) => {
   const videoId = req.params.id;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  Video.findByPk(videoId, {
-    include: [
-      {
-        model: User,
-        attributes: ["id", "name"],
-      },
-    ],
-  })
-    .then((video) => {
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-      res.status(200).json({ message: "Video Fetched", video });
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
+    const video = await Video.findByPk(videoId, {
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name"],
+        },
+      ],
     });
+
+    if (!video) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
+    res.status(200).json({ message: "Video Fetched", video });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 export const createVideo: RequestHandler = async (req: CustomRequest, res) => {

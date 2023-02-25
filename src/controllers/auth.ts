@@ -11,21 +11,20 @@ const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&
 const isValidUrl = (url: string) => /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url);
 
 export const login: RequestHandler = async (req, res) => {
-  const { email, password } = req.body;
+  const email = (req.body as { email: string }).email;
+  const password = (req.body as { password: string }).password;
 
-  if (!email || typeof email !== "string" || !password || typeof password !== "string") {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
+  const newErrors: {
+    email?: string;
+    password?: string;
+  } = {};
 
-  if (!EMAIL_REGEX.test(email)) {
-    return res.status(400).json({ message: "Invalid email address" });
-  }
-
-  if (!PASSWORD_REGEX.test(password)) {
-    return res.status(400).json({
-      message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter, one number, and one special character`,
-    });
-  }
+  if (!email || typeof email !== "string") newErrors.email = "Email is required";
+  if (!password || typeof password !== "string")
+    newErrors.password = "Password is required";
+  if (!EMAIL_REGEX.test(email)) newErrors.email = "Invalid email address";
+  if (!PASSWORD_REGEX.test(password))
+    newErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter, one number, and one special character`;
 
   try {
     const user = await User.findOne({ where: { email } });
@@ -72,57 +71,41 @@ export const login: RequestHandler = async (req, res) => {
 };
 
 export const register: RequestHandler = async (req, res) => {
-  const { email, password, name, bio, imageUrl, role } = req.body;
+  const email = (req.body as { email: string }).email;
+  const password = (req.body as { password: string }).password;
+  const name = (req.body as { name: string }).name;
+  const bio = (req.body as { bio: string }).bio;
+  const imageUrl = (req.body as { imageUrl: string }).imageUrl;
+  const role = (req.body as { role: string }).role;
 
-  // TODO: Add multiple errors form validation
+  const newErrors: {
+    email?: string;
+    password?: string;
+    name?: string;
+    bio?: string;
+    imageUrl?: string;
+    role?: string;
+  } = {};
 
-  if (
-    !email ||
-    typeof email !== "string" ||
-    !password ||
-    typeof password !== "string" ||
-    !name ||
-    typeof name !== "string"
-  ) {
-    return res.status(400).json({ message: "Name, email, and password are required" });
-  }
+  if (!email || typeof email !== "string") newErrors.email = "Email is required";
+  if (!password || typeof password !== "string")
+    newErrors.password = "Password is required";
+  if (!name || typeof name !== "string") newErrors.name = "Name is required";
+  if (name.length > 100) newErrors.name = "Name cannot be more than 100 characters";
+  if (!EMAIL_REGEX.test(email)) newErrors.email = "Invalid email address";
+  if (!PASSWORD_REGEX.test(password))
+    newErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter, one number, and one special character`;
+  if (bio && typeof bio !== "string") newErrors.bio = "Bio must be a string";
+  if (bio && bio.length > 500) newErrors.bio = "Bio cannot be more than 500 characters";
+  if (imageUrl && typeof imageUrl !== "string")
+    newErrors.imageUrl = "Image URL must be a string";
+  if (imageUrl && !isValidUrl(imageUrl)) newErrors.imageUrl = "Invalid image URL";
+  if (role && typeof role !== "string") newErrors.role = "Role must be a string";
+  if (role && role !== "student" && role !== "teacher")
+    newErrors.role = "Role must be either student or teacher";
 
-  if (name.length > 100) {
-    return res.status(400).json({ message: "Name cannot be more than 100 characters" });
-  }
-
-  if (!EMAIL_REGEX.test(email)) {
-    return res.status(400).json({ message: "Invalid email address" });
-  }
-
-  if (!PASSWORD_REGEX.test(password)) {
-    return res.status(400).json({
-      message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter, one number, and one special character`,
-    });
-  }
-
-  if (bio && typeof bio !== "string") {
-    return res.status(400).json({ message: "Bio must be a string" });
-  }
-
-  if (bio && bio.length > 500) {
-    return res.status(400).json({ message: "Bio cannot be more than 500 characters" });
-  }
-
-  if (imageUrl && typeof imageUrl !== "string") {
-    return res.status(400).json({ message: "Image URL must be a string" });
-  }
-
-  if (imageUrl && !isValidUrl(imageUrl)) {
-    return res.status(400).json({ message: "Invalid image URL" });
-  }
-
-  if (role && typeof role !== "string") {
-    return res.status(400).json({ message: "Role must be a string" });
-  }
-
-  if (role && role !== "student" && role !== "teacher") {
-    return res.status(400).json({ message: "Role must be either student or teacher" });
+  if (Object.keys(newErrors).length > 0) {
+    return res.status(400).json(newErrors);
   }
 
   try {
