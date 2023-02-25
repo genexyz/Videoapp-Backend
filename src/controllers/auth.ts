@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/user";
 
-import { jwtSecret } from "../config";
+import { jwtSecret, jwtRefreshSecret } from "../config";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
@@ -38,12 +38,33 @@ export const login: RequestHandler = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret);
+    const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
+      expiresIn: "1h",
+    });
     if (!token) {
       throw new Error("Unable to generate JWT token");
     }
 
-    res.status(200).json({ token });
+    const refreshToken = jwt.sign({ id: user.id, email: user.email }, jwtRefreshSecret, {
+      expiresIn: "7d",
+    });
+    if (!refreshToken) {
+      throw new Error("Unable to generate JWT refresh token");
+    }
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.status(200).json({ token, refreshToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -111,8 +132,38 @@ export const register: RequestHandler = async (req, res) => {
       name,
     });
 
-    const token = jwt.sign({ id: newUser.id, email: newUser.email }, jwtSecret);
-    res.status(201).json({ message: "User created", token });
+    const token = jwt.sign({ id: newUser.id, email: newUser.email }, jwtSecret, {
+      expiresIn: "1h",
+    });
+    if (!token) {
+      throw new Error("Unable to generate JWT token");
+    }
+
+    const refreshToken = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      jwtRefreshSecret,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    if (!refreshToken) {
+      throw new Error("Unable to generate JWT refresh token");
+    }
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.status(201).json({ message: "User created", token, refreshToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });

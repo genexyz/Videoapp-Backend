@@ -5,7 +5,6 @@ TODO:
 
 OPTIONAL:
 -Videos pagination
--Renew Access Token
 -CORS
 -API Documentation
 -Dev docker database
