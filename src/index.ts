@@ -1,4 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { json } from "body-parser";
 import { port } from "./config";
 import sequelize from "./database";
@@ -10,6 +11,8 @@ import userRoutes from "./routes/user";
 const app: Express = express();
 
 app.use(json());
+
+app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Test Server is running");

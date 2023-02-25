@@ -2,10 +2,10 @@ TODO:
 -Initial app bootstrap with seeders or migrations
 -Multiple errors validations on forms bodys
 -README.md
+-Explain how to set allowed origins on CORS in the README.md
 
 OPTIONAL:
 -Videos pagination
--CORS
 -API Documentation
 -Dev docker database
 -Notification when following a creator
