@@ -9,6 +9,8 @@ export default class Video extends Model {
   declare published: boolean;
   declare publishedAt?: Date;
   declare likes: number;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 export const initVideo = (sequelize: Sequelize) => {
@@ -53,5 +55,6 @@ export const initVideo = (sequelize: Sequelize) => {
       tableName: "videos",
     }
   );
+
   sequelize.sync();
 };

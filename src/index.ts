@@ -4,6 +4,7 @@ import { port } from "./config";
 import sequelize from "./database";
 
 import videosRoutes from "./routes/videos";
+import authRoutes from "./routes/auth";
 
 const app: Express = express();
 
@@ -14,6 +15,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/videos", videosRoutes);
+app.use("/auth", authRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: err.message });

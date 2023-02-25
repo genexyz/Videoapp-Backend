@@ -1,5 +1,5 @@
-import { Router } from "express";
-
+import express, { Router } from "express";
+import { isAuthenticated } from "../middlewares/auth";
 import {
   getVideos,
   getVideo,
@@ -10,20 +10,20 @@ import {
   likeVideo,
 } from "../controllers/videos";
 
-const router = Router();
+const router: Router = express.Router();
 
-router.post("/", createVideo);
+router.post("/", isAuthenticated, createVideo);
 
-router.get("/", getVideos);
+router.get("/", isAuthenticated, getVideos);
 
-router.get("/:id", getVideo);
+router.get("/:id", isAuthenticated, getVideo);
 
-router.patch("/:id", updateVideo);
+router.patch("/:id", isAuthenticated, updateVideo);
 
-router.delete("/:id", deleteVideo);
+router.delete("/:id", isAuthenticated, deleteVideo);
 
-router.patch("/:id/publish", publishVideo);
+router.patch("/:id/publish", isAuthenticated, publishVideo);
 
-router.patch("/:id/like", likeVideo);
+router.patch("/:id/like", isAuthenticated, likeVideo);
 
 export default router;

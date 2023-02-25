@@ -1,6 +1,4 @@
 import { RequestHandler } from "express";
-
-import sequelize from "../database";
 import Video from "../models/video";
 
 const isValidUrl = (url: string) => /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url);
