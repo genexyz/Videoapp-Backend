@@ -27,7 +27,7 @@ export const initVideo = (sequelize: Sequelize) => {
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       url: {

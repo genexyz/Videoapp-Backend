@@ -39,7 +39,7 @@ export const initUser = (sequelize: Sequelize) => {
         allowNull: false,
       },
       bio: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
         defaultValue: "No bio yet",
       },

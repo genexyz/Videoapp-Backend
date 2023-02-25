@@ -1,7 +1,7 @@
 TODO:
--Initial app bootstrap with seeders or migrations
 -README.md
 -Explain how to set allowed origins on CORS in the README.md
+-Explain how to set bootstrap values in the README.md (npx sequelize-cli db:seed:all)
 
 OPTIONAL:
 -Videos pagination
