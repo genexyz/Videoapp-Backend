@@ -5,6 +5,8 @@ export default class User extends Model {
   declare email: string;
   declare password: string;
   declare name: string;
+  declare bio: string;
+  declare imageUrl: string;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 
@@ -34,6 +36,16 @@ export const initUser = (sequelize: Sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      bio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "No bio yet",
+      },
+      imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: "https://cdn-icons-png.flaticon.com/512/3237/3237472.png",
       },
       password: {
         type: DataTypes.STRING,

@@ -24,6 +24,6 @@ router.delete("/:id", isAuthenticated, deleteVideo);
 
 router.patch("/:id/publish", isAuthenticated, publishVideo);
 
-router.patch("/:id/like", isAuthenticated, likeVideo);
+router.post("/:id/like", isAuthenticated, likeVideo);
 
 export default router;

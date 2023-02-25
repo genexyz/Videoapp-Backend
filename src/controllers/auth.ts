@@ -8,6 +8,7 @@ import { jwtSecret } from "../config";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+const isValidUrl = (url: string) => /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url);
 
 export const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -50,7 +51,9 @@ export const login: RequestHandler = async (req, res) => {
 };
 
 export const register: RequestHandler = async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name, bio, imageUrl } = req.body;
+
+  // TODO: Add multiple errors form validation
 
   if (
     !email ||
@@ -75,6 +78,22 @@ export const register: RequestHandler = async (req, res) => {
     return res.status(400).json({
       message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long and contain at least one letter, one number, and one special character`,
     });
+  }
+
+  if (bio && typeof bio !== "string") {
+    return res.status(400).json({ message: "Bio must be a string" });
+  }
+
+  if (bio && bio.length > 500) {
+    return res.status(400).json({ message: "Bio cannot be more than 500 characters" });
+  }
+
+  if (imageUrl && typeof imageUrl !== "string") {
+    return res.status(400).json({ message: "Image URL must be a string" });
+  }
+
+  if (imageUrl && !isValidUrl(imageUrl)) {
+    return res.status(400).json({ message: "Invalid image URL" });
   }
 
   try {

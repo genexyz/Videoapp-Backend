@@ -1,0 +1,15 @@
+TODO:
+-Initial app bootstrap with seeders or migrations
+-Multiple errors validations on forms bodys
+-README.md
+
+OPTIONAL:
+-Videos pagination
+-Renew Access Token
+-CORS
+-API Documentation
+-Dev docker database
+-Notification when following a creator
+-Deployment
+-Unit test & Integration Testing
+-Docker implementation for the database
