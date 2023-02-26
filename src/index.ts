@@ -3,6 +3,7 @@ import cors from "cors";
 import { json } from "body-parser";
 import { port } from "./config";
 import sequelize from "./database";
+import { eventEmitter } from "./eventemitter";
 
 import videosRoutes from "./routes/videos";
 import authRoutes from "./routes/auth";
@@ -24,6 +25,10 @@ app.use("/user", userRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: err.message });
+});
+
+eventEmitter.on("follow", ({ followerId, followingId }) => {
+  console.log(`Creator ${followerId} followed creator ${followingId}`);
 });
 
 sequelize

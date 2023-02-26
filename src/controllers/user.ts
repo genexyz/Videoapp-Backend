@@ -4,6 +4,7 @@ import Video from "../models/video";
 import Follow from "../models/follow";
 import Likes from "../models/likes";
 import { CustomRequest } from "../middlewares/auth";
+import { eventEmitter } from "../eventemitter";
 
 export const getUserInfo: RequestHandler = async (req: CustomRequest, res) => {
   const userId = req.user?.id;
@@ -98,6 +99,12 @@ export const followUser: RequestHandler = async (req: CustomRequest, res) => {
         followerId: userId,
         followingId: userToFollowId,
       });
+
+      eventEmitter.emit("follow", {
+        followerId: userId,
+        followingId: userToFollowId,
+      });
+
       res.status(200).json({ message: "User followed" });
     }
   } catch (error) {
