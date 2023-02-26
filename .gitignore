@@ -7,3 +7,5 @@ node_modules/
 *.log
 migrations/
 data/
+coverage
+jest.config.js
