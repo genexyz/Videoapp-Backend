@@ -4,10 +4,9 @@ TODO:
 -Explain how to set bootstrap values in the README.md (npx sequelize-cli db:seed:all)
 
 OPTIONAL:
+-Deployment (in progress)
+-Docker database (in progress)
 -Videos pagination
 -API Documentation
--Dev docker database
 -Notification when following a creator
--Deployment
 -Unit test & Integration Testing
--Docker implementation for the database
