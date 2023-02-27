@@ -8,4 +8,4 @@ TODO:
 OPTIONAL:
 -Docker database (in progress)
 -API Documentation 
--Unit test & Integration Testing
+-Unit test & Integration Testing (in progress)

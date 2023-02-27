@@ -63,7 +63,7 @@ export const login: RequestHandler = async (req, res) => {
       secure: true,
     });
 
-    res.status(200).json({ token, refreshToken });
+    res.status(200).json({ token, refreshToken, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -100,6 +100,7 @@ export const register: RequestHandler = async (req, res) => {
   if (imageUrl && typeof imageUrl !== "string")
     newErrors.imageUrl = "Image URL must be a string";
   if (imageUrl && !isValidUrl(imageUrl)) newErrors.imageUrl = "Invalid image URL";
+  if (!role) newErrors.role = "Role is required";
   if (role && typeof role !== "string") newErrors.role = "Role must be a string";
   if (role && role !== "student" && role !== "teacher")
     newErrors.role = "Role must be either student or teacher";
@@ -157,7 +158,7 @@ export const register: RequestHandler = async (req, res) => {
       secure: true,
     });
 
-    res.status(201).json({ message: "User created", token, refreshToken });
+    res.status(201).json({ message: "User created", token, refreshToken, user: newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
