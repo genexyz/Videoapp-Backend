@@ -4,7 +4,7 @@ import index from "../src/index";
 describe("Get /", () => {
   it("should return 'Test Server is running' when hitting root route", async () => {
     const res = await request(index).get("/");
-    expect(res.text).toBe("Test Server is running");
+    expect(res.text).toBe("VIDEOAPP Server is running");
   });
 
   it("should return 200 when hitting root route", async () => {

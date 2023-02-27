@@ -1,11 +1,4 @@
-TODO:
--README.md
--Explain how to set allowed origins on CORS in the README.md
--Explain how to set bootstrap values in the README.md (npx sequelize-cli db:seed:all)
--Explain deploy in the README.md (https://videoapp-backend.herokuapp.com/)
--Explain pub/sub in the README.md
-
 OPTIONAL:
--Docker database (in progress)
 -API Documentation 
+-Docker database (in progress)
 -Unit test & Integration Testing (in progress)
