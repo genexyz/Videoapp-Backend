@@ -16,7 +16,7 @@ app.use(json());
 app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Test Server is running");
+  res.send("VIDEOAPP Server is running");
 });
 
 app.use("/videos", videosRoutes);
@@ -35,7 +35,7 @@ sequelize
   .sync()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Server is running at http://localhost:${port}`);
+      console.log(`Server is running`);
     });
   })
   .catch((err) => {

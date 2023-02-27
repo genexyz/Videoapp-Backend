@@ -38,14 +38,14 @@ export const login: RequestHandler = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
-      expiresIn: "1h",
+      expiresIn: "24h",
     });
     if (!token) {
       throw new Error("Unable to generate JWT token");
     }
 
     const refreshToken = jwt.sign({ id: user.id, email: user.email }, jwtRefreshSecret, {
-      expiresIn: "7d",
+      expiresIn: "14d",
     });
     if (!refreshToken) {
       throw new Error("Unable to generate JWT refresh token");
@@ -128,7 +128,7 @@ export const register: RequestHandler = async (req, res) => {
     });
 
     const token = jwt.sign({ id: newUser.id, email: newUser.email }, jwtSecret, {
-      expiresIn: "1h",
+      expiresIn: "24h",
     });
     if (!token) {
       throw new Error("Unable to generate JWT token");
@@ -138,7 +138,7 @@ export const register: RequestHandler = async (req, res) => {
       { id: newUser.id, email: newUser.email },
       jwtRefreshSecret,
       {
-        expiresIn: "7d",
+        expiresIn: "14d",
       }
     );
 

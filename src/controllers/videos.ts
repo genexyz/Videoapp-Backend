@@ -20,7 +20,7 @@ export const getVideos: RequestHandler = async (req: CustomRequest, res) => {
       include: [
         {
           model: User,
-          attributes: ["id", "name"],
+          attributes: ["id", "name", "imageUrl"],
         },
       ],
       where: { published: true },
@@ -47,7 +47,7 @@ export const getVideo: RequestHandler = async (req: CustomRequest, res) => {
       include: [
         {
           model: User,
-          attributes: ["id", "name"],
+          attributes: ["id", "name", "imageUrl"],
         },
       ],
     });

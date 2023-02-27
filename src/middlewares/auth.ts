@@ -39,7 +39,7 @@ export const isAuthenticated = async (
         }
 
         const newToken = jwt.sign({ id: user.id, email: user.email }, jwtSecret, {
-          expiresIn: "15m",
+          expiresIn: "24h",
         });
         res.cookie("accessToken", newToken, {
           httpOnly: true,
