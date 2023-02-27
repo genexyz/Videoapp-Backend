@@ -1,4 +1,4 @@
-# Videos Creator Platform - Full Stack Developer Assessment
+# Videos Creator Platform - Full Stack Developer Assessment - Backend
 
 In this platform video creators can upload (video URL) new videos, sign up, list the available videos and video creators. They will also have the ability to like videos and follow other video creators.
 
