@@ -4,7 +4,7 @@ In this platform video creators can upload (video URL) new videos, sign up, list
 
 ## How to set up the app locally
 
-1.  Install the required dependecies
+1.  Install the required dependencies
 
 ```
 npm install
@@ -52,11 +52,11 @@ https://videoapp-backend.herokuapp.com/
 ```
 
 A cloud database already loaded with data is used in the deployment.
-If you have any error to set up the local enviroment, feel free to test the server in the deployed url.
+If you have any error to set up the local environment, feel free to test the server in the deployed URL.
 
 ### Users to test
 
-To test the app you can use the followed users, which are included in the seeders and are already loaded in the cloud database
+To test the app you can use the following  users, which are included in the seeders and are already loaded in the cloud database
 
 ```
 user1@example.com - password1$
@@ -75,13 +75,13 @@ This will log in the console the result of the tests and the total app coverage 
 
 ### Pub / Sub mechanism for Follows
 
-A Pub/Sub mechanism is implemented when a Creator follows another Creator, this mechanism will log in the server terminal the action with both users IDs.
+A Pub/Sub mechanism is implemented when a Creator follows another Creator, this mechanism will log into the server terminal the action with both user's IDs.
 The action is fully customizable if needed, i restricted to a simple console log.
 
 ### Renew Access Token
 
 The Renew Access Token functionality is implemented, along with the JWT access token, a refresh token is generated and sent back to the client.
-The Auth middleware then validates the state of this tokens and generates a new one if necessarry.
+The Auth middleware then validates the state of these tokens and generates a new one if necessary.
 
 ### CORS
 
