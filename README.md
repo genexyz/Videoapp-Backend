@@ -52,11 +52,11 @@ https://videoapp-backend.herokuapp.com/
 ```
 
 A cloud database already loaded with data is used in the deployment.
-If you have any error to set up the local environment, feel free to test the server in the deployed URL.
+If you have any errors when setting up the local environment, feel free to test the client in the deployed URL.
 
 ### Users to test
 
-To test the app you can use the following  users, which are included in the seeders and are already loaded in the cloud database
+To test the app you can use the following users, which are included in the seeders and are already loaded in the cloud database
 
 ```
 user1@example.com - password1$
